@@ -1,0 +1,226 @@
+﻿@page
+@{}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Music Band Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body style="background-color:darkgrey">
+    <!-- Main Area where data will display-->
+    <div class="container">
+        <div class="row" style="background-color:darksalmon">
+            <h1>Music Band Database</h1>
+        </div>
+        <br />
+        <br />
+        <div class="row">
+            <button class="btn btn-success" data-toggle="modal" data-target="#insertDetails">Insert Details</button>
+        </div>
+        <br />
+         <div class="container" style="background-color:darkseagreen">
+             <div class="row">
+                 <br/>
+             </div>
+            <div class="row"  id="BandDetailsSection"></div>
+        </div>
+    </div>
+    <!-- web form to insert the data-->
+    <div class="modal" tabindex="-1" role="dialog" id="insertDetails">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Insert New Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="BandName">Band Name</label>
+                            <input type="text" class="form-control" id="BandName" aria-describedby="BandNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="ProducerName">Producer Name</label>
+                            <input type="text" class="form-control" id="ProducerName" aria-describedby="ProducerNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="AlbumName">Album Name</label>
+                            <input type="text" class="form-control" id="AlbumName" aria-describedby="AlbumNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="AlbumReleaseDate">Album Release Date</label>
+                            <input type="datetime-local" class="form-control" id="AlbumReleaseDate" aria-describedby="AlbumReleaseDateHelp">
+                        </div>
+                        <div class="form-group" id="result">
+                        </div>
+                        <button type="button" onclick="insert()" class="btn btn-danger">Insert</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- web form to update the data-->
+    <div class="modal" tabindex="-1" role="dialog" id="UpdateDetails">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="Edit_id" aria-describedby="Id_Help">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_BandName">Band Name</label>
+                            <input type="text" class="form-control" id="Edit_BandName" aria-describedby="Edit_BandNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_ProducerName">Producer Name</label>
+                            <input type="text" class="form-control" id="Edit_ProducerName" aria-describedby="Edit_ProducerNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_AlbumName">Album Name</label>
+                            <input type="text" class="form-control" id="Edit_AlbumName" aria-describedby="Edit_AlbumNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_AlbumReleaseDate">Album Release Date</label>
+                            <input type="datetime-local" class="form-control" id="Edit_AlbumReleaseDate" aria-describedby="Edit_AlbumReleaseDateHelp">
+                        </div>
+                        <div class="form-group" id="resultUpdate">
+                        </div>
+                        <button type="button" onclick="Update()" class="btn btn-danger">Modify</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript Files-->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+        var uri = 'api/BandDetails';
+        $(document).ready(function () {
+            // Gets all data
+            $.getJSON(uri).done(function (data) {
+                $("#Main_temp").tmpl(data).appendTo("#BandDetailsSection");
+            });
+        });
+        function BandData() {
+            $.getJSON(uri).done(function (data) {
+                $("#BandDetailsSection").text("");
+                $("#Main_temp").tmpl(data).appendTo("#BandDetailsSection");
+            });
+        }
+        //function to Insert Data
+        function insert() {
+            var _BandName = $('#BandName').val();
+            var _ProducerName = $('#ProducerName').val();
+            var _AlbumName = $('#AlbumName').val();
+            var _AlbumReleaseDate = $('#AlbumReleaseDate').val();
+
+            var BandData_Object = {
+                band_Name: _BandName,
+                producer_Name: _ProducerName,
+                album_Name: _AlbumName,
+                album_ReleaseDate: _AlbumReleaseDate
+            };
+            $.ajax({
+                type: "POST",
+                url: uri,
+                data: JSON.stringify(BandData_Object),
+                contentType: "application/json; charset=utf-8"
+            }).done(function (response) {
+                $("#result").html("Record inserted successfully");
+                BandData();
+            }).fail(function (jqXHR, textStatus) {
+                $("#result").html("Record is not inserted. There is an error");
+            });
+        }
+        //function to Update Data
+        function Update() {
+            var _BandName = $('#Edit_BandName').val();
+            var _ProducerName = $('#Edit_ProducerName').val();
+            var _AlbumName = $('#Edit_AlbumName').val();
+            var _AlbumReleaseDate = $('#Edit_AlbumReleaseDate').val();
+
+            var BandUpdateData_Obj = {
+                id: parseInt($('#Edit_id').val()),
+                band_Name: _BandName,
+                producer_Name: _ProducerName,
+                album_Name: _AlbumName,
+                album_ReleaseDate: _AlbumReleaseDate
+            };
+            $.ajax({
+                type: "PUT",
+                url: uri + "/" + $('#Edit_id').val(),
+                data: JSON.stringify(BandUpdateData_Obj),
+                contentType: "application/json; charset=utf-8"
+            }).done(function (response) {
+                $("#resultUpdate").html("Record updated successfully");
+                BandData();
+            }).fail(function (jqXHR, textStatus) {
+                $("#resultUpdate").html("Record is not inserted. There is an error");
+            });
+        }
+        // function to remove record
+        function remove(id) {
+            var yes = confirm("Do you really want to delete this account?");
+            if (yes) {
+                $.ajax({
+                    type: "DELETE",
+                    url: uri + "/" + id,
+                }).done(function (response) {
+                    BandData();
+                });
+            }
+        }
+        //function to display data in update form
+        function UpdateRecord(id) {
+            $.ajax({
+                type: "GET",
+                url: uri + "/" + id,
+                contentType: "application/json"
+            }).done(function (response) {
+                $('#Edit_id').val(response.id);
+                $('#Edit_BandName').val(response.band_Name);
+                $('#Edit_ProducerName').val(response.producer_Name);
+                $('#Edit_AlbumName').val(response.album_Name);
+                $('#Edit_AlbumReleaseDate').val(response.album_ReleaseDate);
+            });
+        }
+    </script>
+    <!--Template to display data-->
+    <script id="Main_temp" type="text/x-jquery-tmpl">
+        <div class="col-lg-6">
+            <div class="card border-secondary mb-3">
+                <img src="" class="card-img-top" alt="">
+                <div class="card-body">
+                    <h5 class="card-title">Band Name: ${band_Name}</h5>
+                    <p class="card-title"><b>Producer Name:</b> ${producer_Name}</p>
+                    <p class="card-text"><b>Album Name:</b> ${album_Name}</p>
+                    <p class="card-text"><b>Album Release Date:</b> ${album_ReleaseDate}</p>
+                    <button class="btn btn-outline-danger" onclick="UpdateRecord('${id}')" data-toggle="modal" data-target="#UpdateDetails">Update</button>
+                    <a href="#" class="btn btn-outline-dark" onclick="remove('${id}')">Delete</a>
+                </div>
+            </div>
+        </div>
+    </script>
+</body>
+</html>
+
+
